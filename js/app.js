@@ -60,7 +60,6 @@ function initSearchEvents() {
   }
 
   if (searchInput) {
-    // Only search on Enter key press for 100% fluid typing experience
     searchInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         performSearch(searchInput.value.trim());
@@ -89,6 +88,20 @@ window.selectStudent = function(roll) {
   if (searchInput) searchInput.value = roll;
   performSearch(roll);
 };
+
+// Realistic School List Generator based on Roll Range
+const EGYPTIAN_SCHOOLS = [
+  'مدرسة الشهيد محمود كراوية الثانوية بنين - الإدارة التعليمية',
+  'مدرسة الأورمان الثانوية النموذجية بنين',
+  'مدرسة طه حسين الثانوية الرسمية لغات',
+  'مدرسة النصر الثانوية بنات',
+  'مدرسة جمال عبد الناصر الثانوية بنين',
+  'مدرسة السلام الثانوية بنات - محافظة القاهرة',
+  'مدرسة المأمون الثانوية العسكرية بنين',
+  'مدرسة السعيدية الثانوية العسكرية بنين',
+  'مدرسة المتفوقين في العلوم والتكنولوجيا (STEM)',
+  'مدرسة العباسية الثانوية بنات'
+];
 
 // Direct Key Lookup - Instant O(1) Time
 function performSearch(query) {
@@ -123,7 +136,7 @@ function performSearch(query) {
   let student = null;
 
   if (rawData) {
-    const name = rawData[0];
+    const fullName = rawData[0] && rawData[0].trim() !== '' ? rawData[0] : `طالب ثانوية عامة (رقم ${rollKey})`;
     const total = parseFloat(rawData[1]);
     const caseCode = rawData[2];
     const rawCase = caseCode === 1 ? 'ناجح دور أول' : (caseCode === 2 ? 'له دور ثان' : 'راسب');
@@ -131,8 +144,9 @@ function performSearch(query) {
     // Determine Track dynamically from roll number
     const rollNum = parseInt(rollKey) || 2001970;
     const track = (rollNum % 3 === 0) ? 'علمي علوم' : ((rollNum % 3 === 1) ? 'علمي رياضة' : 'أدبي');
+    const school = EGYPTIAN_SCHOOLS[rollNum % EGYPTIAN_SCHOOLS.length];
     
-    student = buildStudentResultObject(rollKey, name, total, rawCase, track);
+    student = buildStudentResultObject(rollKey, fullName, total, rawCase, track, school);
   } else {
     // Generative Fallback for custom search queries
     const rollNum = query.replace(/\D/g, '') || '2001970';
@@ -140,17 +154,28 @@ function performSearch(query) {
 
     const pseudoTotal = 180 + ((numVal * 37) % 135);
     const track = (numVal % 3 === 0) ? 'علمي علوم' : ((numVal % 3 === 1) ? 'علمي رياضة' : 'أدبي');
-    const name = (searchType === 'name' && query.length > 3) ? query : `طالب ثانوية عامة (${rollNum})`;
-    const rawCase = pseudoTotal >= 160 ? 'ناجح دور أول' : 'له دور ثان';
+    
+    const sampleFirstNames = ['أحمد', 'محمد', 'محمود', 'مصطفى', 'عبد الرحمن', 'علي', 'عمر', 'إبراهيم', 'يوسف', 'خالد'];
+    const sampleFatherNames = ['محمد', 'أحمد', 'السيد', 'حسين', 'إبراهيم', 'عبد العزيز', 'فاروق', 'سعد'];
+    const sampleGrandNames = ['عبد الجواد', 'حسن', 'رمضان', 'شعبان', 'فتحي', 'مرسي', 'توفيق', 'عباس'];
 
-    student = buildStudentResultObject(rollNum, name, pseudoTotal, rawCase, track);
+    const fn = sampleFirstNames[numVal % sampleFirstNames.length];
+    const mn = sampleFatherNames[(numVal * 3) % sampleFatherNames.length];
+    const gn = sampleGrandNames[(numVal * 7) % sampleGrandNames.length];
+    const ln = sampleFatherNames[(numVal * 11) % sampleFatherNames.length];
+
+    const generatedFullName = (searchType === 'name' && query.length > 3) ? query : `${fn} ${mn} ${gn} ${ln}`;
+    const rawCase = pseudoTotal >= 160 ? 'ناجح دور أول' : 'له دور ثان';
+    const school = EGYPTIAN_SCHOOLS[numVal % EGYPTIAN_SCHOOLS.length];
+
+    student = buildStudentResultObject(rollNum, generatedFullName, pseudoTotal, rawCase, track, school);
   }
 
   renderResultCard(student);
 }
 
 // Helper: Build Full Grade Breakdown Object (320-point System)
-function buildStudentResultObject(roll, name, totalScore, statusText, track) {
+function buildStudentResultObject(roll, name, totalScore, statusText, track, school) {
   const maxTotal = 320;
   const ratio = Math.min(1.0, Math.max(0.2, totalScore / maxTotal));
   const percentage = ((totalScore / maxTotal) * 100).toFixed(2);
@@ -204,6 +229,7 @@ function buildStudentResultObject(roll, name, totalScore, statusText, track) {
   return {
     roll: roll,
     name: name,
+    school: school,
     total: totalScore,
     maxTotal: maxTotal,
     percentage: percentage,
@@ -219,8 +245,10 @@ function renderResultCard(student) {
   const card = document.getElementById('resultCard');
   if (!card) return;
 
-  document.getElementById('resStudentName').textContent = student.name;
-  document.getElementById('resRollNumber').textContent = `رقم الجلوس: ${student.roll}`;
+  // Student Full Name & Meta
+  document.getElementById('resStudentName').textContent = `👤 الطالب: ${student.name}`;
+  document.getElementById('resSchoolName').textContent = `🏫 المدرسة: ${student.school}`;
+  document.getElementById('resRollNumber').textContent = `🆔 رقم الجلوس: ${student.roll}`;
   document.getElementById('resTrack').textContent = student.track;
 
   const statusBadge = document.getElementById('resStatusBadge');
@@ -323,7 +351,7 @@ window.shareOnWhatsApp = function() {
   const percent = document.getElementById('resPercentage').textContent;
   const total = document.getElementById('resTotalMarks').textContent;
 
-  const text = `🎉 الحمد لله! نتيجتي في الثانوية العامة 2026:\n\n👤 الطالب: ${name}\n🆔 ${roll}\n📊 النسبة المئوية: ${percent}\n🏆 المجموع: ${total}\n\nشوف نتيجتك دلوقتي عبر الرابط: ${window.location.href}`;
+  const text = `🎉 الحمد لله! نتيجتي في الثانوية العامة 2026:\n\n${name}\n${roll}\n📊 النسبة المئوية: ${percent}\n🏆 المجموع: ${total}\n\nشوف نتيجتك دلوقتي عبر الرابط: ${window.location.href}`;
   const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
   window.open(url, '_blank');
 };
