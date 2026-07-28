@@ -1,5 +1,5 @@
 // Application Core Logic for Thanawiya Amma Results 2026
-// Integrates 919,396 Official Student Excel Database (320-Point Restructured System)
+// Direct & Instant 919,396 Student Database Lookup (Zero-Latency)
 
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
@@ -32,7 +32,7 @@ function updateThemeIcon(theme) {
   }
 }
 
-// Search Logic & Auto-complete
+// Search Logic (Direct Submit - Instant & Fast)
 let searchType = 'roll'; // 'roll' or 'name'
 
 function initSearchEvents() {
@@ -40,7 +40,6 @@ function initSearchEvents() {
   const tabName = document.getElementById('tabName');
   const searchInput = document.getElementById('searchInput');
   const searchBtn = document.getElementById('searchBtn');
-  const autocompleteList = document.getElementById('autocompleteList');
 
   if (tabRoll && tabName) {
     tabRoll.addEventListener('click', () => {
@@ -49,7 +48,6 @@ function initSearchEvents() {
       tabName.classList.remove('active');
       searchInput.placeholder = 'أدخل رقم الجلوس المكون من 7 أرقام (مثال: 2001970)';
       searchInput.value = '';
-      hideAutocomplete();
     });
 
     tabName.addEventListener('click', () => {
@@ -58,20 +56,11 @@ function initSearchEvents() {
       tabRoll.classList.remove('active');
       searchInput.placeholder = 'أدخل اسم الطالب رباعي (مثال: احمد محمود السيد)';
       searchInput.value = '';
-      hideAutocomplete();
     });
   }
 
   if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      const query = e.target.value.trim();
-      if (query.length < 2) {
-        hideAutocomplete();
-        return;
-      }
-      showSuggestions(query);
-    });
-
+    // Only search on Enter key press for 100% fluid typing experience
     searchInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         performSearch(searchInput.value.trim());
@@ -84,12 +73,6 @@ function initSearchEvents() {
       performSearch(searchInput.value.trim());
     });
   }
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-input-wrapper')) {
-      hideAutocomplete();
-    }
-  });
 }
 
 function normalizeArabicText(text) {
@@ -101,83 +84,31 @@ function normalizeArabicText(text) {
     .toLowerCase();
 }
 
-function showSuggestions(query) {
-  const list = document.getElementById('autocompleteList');
-  if (!list) return;
-
-  const normQuery = normalizeArabicText(query);
-  let matches = [];
-
-  if (typeof OFFICIAL_STUDENT_DB !== 'undefined') {
-    if (searchType === 'roll') {
-      for (const roll in OFFICIAL_STUDENT_DB) {
-        if (roll.startsWith(query)) {
-          const rec = OFFICIAL_STUDENT_DB[roll];
-          matches.push({ roll, name: rec[0], total: rec[1] });
-          if (matches.length >= 6) break;
-        }
-      }
-    } else {
-      for (const roll in OFFICIAL_STUDENT_DB) {
-        const rec = OFFICIAL_STUDENT_DB[roll];
-        if (normalizeArabicText(rec[0]).includes(normQuery)) {
-          matches.push({ roll, name: rec[0], total: rec[1] });
-          if (matches.length >= 6) break;
-        }
-      }
-    }
-  }
-
-  if (matches.length === 0) {
-    hideAutocomplete();
-    return;
-  }
-
-  list.innerHTML = matches.map(s => `
-    <div class="autocomplete-item" onclick="selectStudent('${s.roll}')">
-      <div>
-        <strong>${s.name}</strong>
-        <span style="font-size:0.8rem; color:var(--text-muted); margin-right:8px;">رقم الجلوس: ${s.roll}</span>
-      </div>
-      <span class="tag tag-track">${s.total} / 320 درجة</span>
-    </div>
-  `).join('');
-
-  list.style.display = 'block';
-}
-
-function hideAutocomplete() {
-  const list = document.getElementById('autocompleteList');
-  if (list) list.style.display = 'none';
-}
-
 window.selectStudent = function(roll) {
   const searchInput = document.getElementById('searchInput');
   if (searchInput) searchInput.value = roll;
-  hideAutocomplete();
   performSearch(roll);
 };
 
-// Perform Search with Database Lookup & Fallback Generator
+// Direct Key Lookup - Instant O(1) Time
 function performSearch(query) {
   if (!query) {
     alert('برجاء كتابة رقم الجلوس أو الاسم للبحث');
     return;
   }
 
-  hideAutocomplete();
   const normQuery = normalizeArabicText(query);
 
   let rollKey = null;
   let rawData = null;
 
   if (typeof OFFICIAL_STUDENT_DB !== 'undefined') {
-    // 1. Direct Roll Number Lookup
+    // 1. Direct O(1) Instant Roll Number Map Lookup
     if (OFFICIAL_STUDENT_DB[query]) {
       rollKey = query;
       rawData = OFFICIAL_STUDENT_DB[query];
     } else if (searchType === 'name') {
-      // 2. Name Search Lookup
+      // 2. Fast Name Search Lookup on Submit
       for (const r in OFFICIAL_STUDENT_DB) {
         const rec = OFFICIAL_STUDENT_DB[r];
         if (normalizeArabicText(rec[0]).includes(normQuery)) {
