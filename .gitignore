@@ -4,3 +4,7 @@
 !.dev.vars.example
 .env*
 !.env.example
+
+# Raw Data Sources
+*.xlsx
+process_excel_to_js.py
