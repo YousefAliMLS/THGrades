@@ -174,57 +174,10 @@ function performSearch(query) {
   renderResultCard(student);
 }
 
-// Helper: Build Full Grade Breakdown Object (320-point System)
+// Helper: Build Student Object
 function buildStudentResultObject(roll, name, totalScore, statusText, track, school) {
   const maxTotal = 320;
-  const ratio = Math.min(1.0, Math.max(0.2, totalScore / maxTotal));
   const percentage = ((totalScore / maxTotal) * 100).toFixed(2);
-
-  const arabicScore = Math.min(80, Math.round(80 * ratio));
-  const engScore = Math.min(60, Math.round(60 * ratio));
-
-  let subjects = {};
-
-  if (track === 'علمي علوم') {
-    const chem = Math.min(60, Math.round(60 * ratio));
-    const phys = Math.min(60, Math.round(60 * ratio));
-    const bio = Math.min(60, Math.max(0, totalScore - (arabicScore + engScore + chem + phys)));
-    subjects = {
-      'arabic': { name: 'اللغة العربية', score: arabicScore, max: 80 },
-      'english': { name: 'اللغة الأجنبية الأولى (الإنجليزية)', score: engScore, max: 60 },
-      'chemistry': { name: 'الكيمياء', score: chem, max: 60 },
-      'physics': { name: 'الفيزياء', score: phys, max: 60 },
-      'biology': { name: 'الأحياء', score: Math.min(60, Math.max(10, bio)), max: 60 }
-    };
-  } else if (track === 'علمي رياضة') {
-    const chem = Math.min(60, Math.round(60 * ratio));
-    const phys = Math.min(60, Math.round(60 * ratio));
-    const math = Math.min(60, Math.max(0, totalScore - (arabicScore + engScore + chem + phys)));
-    subjects = {
-      'arabic': { name: 'اللغة العربية', score: arabicScore, max: 80 },
-      'english': { name: 'اللغة الأجنبية الأولى (الإنجليزية)', score: engScore, max: 60 },
-      'chemistry': { name: 'الكيمياء', score: chem, max: 60 },
-      'physics': { name: 'الفيزياء', score: phys, max: 60 },
-      'math': { name: 'الرياضيات', score: Math.min(60, Math.max(10, math)), max: 60 }
-    };
-  } else {
-    const hist = Math.min(60, Math.round(60 * ratio));
-    const geog = Math.min(60, Math.round(60 * ratio));
-    const econ = Math.min(60, Math.max(0, totalScore - (arabicScore + engScore + hist + geog)));
-    subjects = {
-      'arabic': { name: 'اللغة العربية', score: arabicScore, max: 80 },
-      'english': { name: 'اللغة الأجنبية الأولى (الإنجليزية)', score: engScore, max: 60 },
-      'history': { name: 'التاريخ', score: hist, max: 60 },
-      'geography': { name: 'الجغرافيا', score: geog, max: 60 },
-      'economics': { name: 'الإحصاء والاقتصاد', score: Math.min(60, Math.max(10, econ)), max: 60 }
-    };
-  }
-
-  const nonAdded = {
-    'religion': { name: 'التربية الدينية', score: 21, max: 25 },
-    'patriotism': { name: 'التربية الوطنية', score: 22, max: 25 },
-    'second_lang': { name: 'اللغة الأجنبية الثانية (فرنساوي / إيطالي / ألماني)', score: 35, max: 40 }
-  };
 
   return {
     roll: roll,
@@ -234,9 +187,7 @@ function buildStudentResultObject(roll, name, totalScore, statusText, track, sch
     maxTotal: maxTotal,
     percentage: percentage,
     status: statusText,
-    track: track,
-    subjects: subjects,
-    nonAdded: nonAdded
+    track: track
   };
 }
 
@@ -260,42 +211,6 @@ function renderResultCard(student) {
 
   document.getElementById('resPercentage').textContent = `${student.percentage}%`;
   document.getElementById('resTotalMarks').textContent = `${student.total} / ${student.maxTotal}`;
-
-  const tableBody = document.getElementById('resGradeTableBody');
-  let tableHTML = '';
-
-  for (const [key, subj] of Object.entries(student.subjects)) {
-    const pct = Math.round((subj.score / subj.max) * 100);
-    tableHTML += `
-      <tr>
-        <td><strong>${subj.name}</strong></td>
-        <td>${subj.score} / ${subj.max}</td>
-        <td>${pct}%</td>
-        <td style="width:140px;">
-          <div class="progress-bar-bg">
-            <div class="progress-bar-fill" style="width: ${pct}%;"></div>
-          </div>
-        </td>
-      </tr>
-    `;
-  }
-
-  tableBody.innerHTML = tableHTML;
-
-  const nonAddedBody = document.getElementById('resNonAddedTableBody');
-  let nonAddedHTML = '';
-
-  for (const [key, subj] of Object.entries(student.nonAdded)) {
-    const isPass = subj.score >= (subj.max / 2);
-    nonAddedHTML += `
-      <tr>
-        <td>${subj.name}</td>
-        <td>${subj.score} / ${subj.max}</td>
-        <td><span class="tag ${isPass ? 'tag-status-pass' : 'tag-status-fail'}">${isPass ? 'مستوفى (ناجح)' : 'غير مستوفى'}</span></td>
-      </tr>
-    `;
-  }
-  nonAddedBody.innerHTML = nonAddedHTML;
 
   renderTanseeqSection(student);
 
@@ -356,13 +271,24 @@ window.shareOnWhatsApp = function() {
   window.open(url, '_blank');
 };
 
-// FAQ Accordion
+// FAQ Accordion Handler (Smooth Toggle Fix)
 function initFAQ() {
   const questions = document.querySelectorAll('.faq-question');
   questions.forEach(q => {
-    q.addEventListener('click', () => {
+    q.addEventListener('click', (e) => {
+      e.preventDefault();
       const item = q.parentElement;
-      item.classList.toggle('open');
+      const isOpen = item.classList.contains('open');
+
+      // Close all other open items
+      document.querySelectorAll('.faq-item').forEach(other => {
+        other.classList.remove('open');
+      });
+
+      // Toggle current
+      if (!isOpen) {
+        item.classList.add('open');
+      }
     });
   });
 }

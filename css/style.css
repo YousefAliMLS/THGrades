@@ -1,42 +1,30 @@
-/* ==========================================================================
-   Obsidian & Emerald Design System - Thanawiya Amma Results 2026
-   ========================================================================== */
-
 :root {
-  /* Color Palette */
   --bg-dark: #090d16;
-  --bg-card: rgba(17, 24, 39, 0.7);
-  --bg-card-hover: rgba(31, 41, 55, 0.85);
-  --primary: #10b981;
-  --primary-hover: #059669;
-  --primary-glow: rgba(16, 185, 129, 0.25);
-  --accent-gold: #f59e0b;
-  --accent-blue: #3b82f6;
-  
-  --text-main: #f9fafb;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  
+  --bg-card: rgba(18, 26, 43, 0.7);
   --border-light: rgba(255, 255, 255, 0.08);
-  --border-glow: rgba(16, 185, 129, 0.4);
-  
+  --primary: #10b981;
+  --primary-glow: rgba(16, 185, 129, 0.25);
+  --accent-blue: #3b82f6;
+  --accent-purple: #8b5cf6;
+  --text-main: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --success: #10b981;
   --font-family: 'Cairo', 'Readex Pro', sans-serif;
-  --transition-fast: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Light Theme Overrides */
 [data-theme="light"] {
-  --bg-dark: #f3f4f6;
+  --bg-dark: #f1f5f9;
   --bg-card: rgba(255, 255, 255, 0.85);
-  --bg-card-hover: rgba(243, 244, 246, 0.95);
-  --text-main: #111827;
-  --text-secondary: #4b5563;
-  --text-muted: #6b7280;
   --border-light: rgba(0, 0, 0, 0.08);
-  --border-glow: rgba(16, 185, 129, 0.5);
+  --text-main: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
 }
 
-/* Reset & Base Styles */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -44,14 +32,13 @@
 }
 
 body {
-  font-family: var(--font-family);
   background-color: var(--bg-dark);
   color: var(--text-main);
+  font-family: var(--font-family);
+  direction: rtl;
   min-height: 100vh;
-  line-height: 1.6;
   overflow-x: hidden;
-  position: relative;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  line-height: 1.6;
 }
 
 /* Ambient Background Lights */
@@ -59,8 +46,8 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
@@ -70,52 +57,43 @@ body {
   position: absolute;
   border-radius: 50%;
   filter: blur(120px);
-  opacity: 0.35;
+  opacity: 0.25;
 }
 
 .orb-1 {
-  top: -10%;
-  right: -10%;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, #10b981 0%, transparent 70%);
+  background: var(--primary);
+  top: -150px;
+  right: -100px;
 }
 
 .orb-2 {
-  bottom: 10%;
-  left: -10%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+  width: 450px;
+  height: 450px;
+  background: var(--accent-blue);
+  bottom: -150px;
+  left: -100px;
 }
 
-/* Layout Container */
-.container {
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* Navigation Bar */
+/* Navbar */
 .navbar {
   background: rgba(9, 13, 22, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-light);
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 12px 0;
+  padding: 14px 0;
 }
 
 .nav-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .brand-logo {
@@ -128,14 +106,6 @@ body {
   text-decoration: none;
 }
 
-.brand-logo-img {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  object-fit: cover;
-  box-shadow: 0 0 10px var(--primary-glow);
-}
-
 .brand-badge {
   background: linear-gradient(135deg, var(--primary), #059669);
   color: #fff;
@@ -145,78 +115,69 @@ body {
   font-weight: 700;
 }
 
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.theme-toggle-btn, .mode-toggle-btn {
-  background: var(--bg-card);
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-light);
   color: var(--text-main);
-  padding: 8px 14px;
+  width: 40px;
+  height: 40px;
   border-radius: 12px;
   cursor: pointer;
-  font-family: var(--font-family);
-  font-size: 0.88rem;
-  font-weight: 600;
+  font-size: 1.2rem;
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
   transition: var(--transition-fast);
 }
 
-.theme-toggle-btn:hover, .mode-toggle-btn:hover {
-  border-color: var(--primary);
-  box-shadow: 0 0 12px var(--primary-glow);
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
-/* Glassmorphism Card Base */
+/* Main Container & Layout */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 30px 20px 80px 20px;
+}
+
+/* Glass Card */
 .glass-card {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
   border: 1px solid var(--border-light);
-  border-radius: 20px;
-  padding: 28px;
+  border-radius: 24px;
+  padding: 30px;
   margin-bottom: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  transition: var(--transition-fast);
-}
-
-.glass-card:hover {
-  border-color: rgba(16, 185, 129, 0.2);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
 }
 
 /* Hero Header */
 .hero-header {
   text-align: center;
-  margin: 30px 0;
+  margin-bottom: 35px;
 }
 
 .system-notice-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  color: var(--accent-gold);
   padding: 6px 16px;
   border-radius: 30px;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 700;
   margin-bottom: 16px;
+  border: 1px solid;
 }
 
 .hero-title {
-  font-size: 2.3rem;
+  font-size: 2.2rem;
   font-weight: 900;
-  background: linear-gradient(135deg, #ffffff 30%, var(--primary) 100%);
+  line-height: 1.3;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #fff 0%, var(--text-secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 10px;
-  letter-spacing: -0.5px;
 }
 
 .hero-subtitle {
@@ -224,35 +185,6 @@ body {
   font-size: 1.05rem;
   max-width: 650px;
   margin: 0 auto;
-}
-
-/* Countdown Grid for Pre-launch */
-.countdown-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  max-width: 480px;
-  margin: 24px auto 0 auto;
-}
-
-.timer-box {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid var(--border-light);
-  border-radius: 14px;
-  padding: 12px;
-  text-align: center;
-}
-
-.timer-value {
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: var(--primary);
-  display: block;
-}
-
-.timer-label {
-  font-size: 0.75rem;
-  color: var(--text-muted);
 }
 
 /* Search Tabs & Box */
@@ -278,7 +210,7 @@ body {
 }
 
 .tab-btn.active {
-  background: var(--primary-glow);
+  background: rgba(16, 185, 129, 0.15);
   color: var(--primary);
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
@@ -334,36 +266,6 @@ body {
   box-shadow: 0 6px 24px rgba(16, 185, 129, 0.4);
 }
 
-/* Autocomplete Dropdown */
-.autocomplete-list {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
-  background: var(--bg-dark);
-  border: 1px solid var(--border-light);
-  border-radius: 14px;
-  max-height: 250px;
-  overflow-y: auto;
-  z-index: 50;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
-  display: none;
-}
-
-.autocomplete-item {
-  padding: 12px 18px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border-light);
-  transition: var(--transition-fast);
-}
-
-.autocomplete-item:hover {
-  background: var(--primary-glow);
-  color: var(--primary);
-}
-
 /* Result Card Styles */
 .result-card {
   display: none;
@@ -416,10 +318,22 @@ body {
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
+.tag-status-resit {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--warning);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.tag-status-fail {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
 /* Gauge Badge */
 .score-badge-circle {
-  width: 110px;
-  height: 110px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
   border: 3px solid var(--primary);
@@ -431,45 +345,16 @@ body {
 }
 
 .score-badge-percent {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 900;
   color: var(--primary);
   line-height: 1;
 }
 
 .score-badge-total {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
   margin-top: 4px;
-}
-
-/* Grade Table */
-.grade-table-wrapper {
-  overflow-x: auto;
-  margin-bottom: 24px;
-}
-
-.grade-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: right;
-}
-
-.grade-table th, .grade-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border-light);
-}
-
-.grade-table th {
-  background: rgba(0, 0, 0, 0.2);
-  color: var(--text-secondary);
-  font-size: 0.88rem;
-  font-weight: 700;
-}
-
-.grade-table td {
-  font-size: 0.95rem;
-  font-weight: 600;
 }
 
 /* Tanseeq Grid */
@@ -488,28 +373,27 @@ body {
   margin-top: 16px;
 }
 
-.college-card {
+.faculty-card {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: 12px;
   padding: 14px;
   display: flex;
-  justify-content: space-between;
+  gap: 12px;
   align-items: center;
 }
 
-.college-card.eligible {
-  border-color: rgba(16, 185, 129, 0.4);
-  background: rgba(16, 185, 129, 0.05);
+.faculty-icon {
+  font-size: 1.5rem;
 }
 
-.college-name {
-  font-weight: 700;
-  font-size: 0.92rem;
+.faculty-info h4 {
+  font-size: 0.95rem;
+  font-weight: 800;
 }
 
-.college-min {
-  font-size: 0.8rem;
+.faculty-info p {
+  font-size: 0.82rem;
   color: var(--text-secondary);
 }
 
@@ -553,6 +437,70 @@ body {
 
 .btn-whatsapp:hover {
   background: rgba(37, 211, 102, 0.25);
+}
+
+/* FAQ Accordion Styling (Fixed & Styled) */
+.faq-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.faq-item {
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  transition: var(--transition-fast);
+}
+
+.faq-item.open {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.06);
+}
+
+.faq-question {
+  width: 100%;
+  padding: 16px 20px;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font-family: var(--font-family);
+  font-size: 1rem;
+  font-weight: 800;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  text-align: right;
+  outline: none;
+}
+
+.faq-icon {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--primary);
+  transition: transform 0.3s ease;
+}
+
+.faq-item.open .faq-icon {
+  transform: rotate(45deg);
+}
+
+.faq-answer {
+  display: none;
+  padding: 0 20px 16px 20px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  margin-top: 4px;
+  padding-top: 12px;
+}
+
+.faq-item.open .faq-answer {
+  display: block;
 }
 
 /* Ad Spaces Styling */
@@ -635,9 +583,5 @@ footer {
 
   .student-tags {
     justify-content: center;
-  }
-
-  .countdown-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
 }

@@ -87,7 +87,7 @@
         <span>تم اعتماد وإعلان نتيجة الثانوية العامة 2026 بالنظام الجديد (المجموع الكلي 320 درجة)</span>
       </div>
       <h1 class="hero-title">البوابة الرسمية لنتيجة الثانوية العامة 2026</h1>
-      <p class="hero-subtitle">ادخل رقم الجلوس أو الاسم الرباعي للاستعلام الفوري واستخراج بيان الدرجات المعتمد ومؤشرات التنسيق</p>
+      <p class="hero-subtitle">ادخل رقم الجلوس أو الاسم الرباعي للاستعلام الفوري واستخراج النتيجة الرسمية المعتمدة ومؤشرات التنسيق</p>
     </header>
 
     <!-- LIVE SEARCH ENGINE SECTION -->
@@ -127,7 +127,7 @@
         <div id="container-97475d65e67d3edda3893580fddb4c64"></div>
       </div>
 
-      <!-- RESULT CARD & OFFICIAL GRADE SHEET -->
+      <!-- OFFICIAL CLEAN RESULT CARD -->
       <div id="resultCard" class="glass-card result-card">
         
         <!-- Official Verification Seal Header -->
@@ -135,7 +135,7 @@
           <div style="display:flex; align-items:center; gap:10px;">
             <span style="font-size: 1.5rem;">🏛️</span>
             <div>
-              <strong style="color: var(--success); font-size: 0.95rem; display:block;">بيان درجات رسمي معتمد - كنترول الثانوية العامة 2026</strong>
+              <strong style="color: var(--success); font-size: 0.95rem; display:block;">بيان نتيجة رسمي معتمد - كنترول الثانوية العامة 2026</strong>
               <span style="font-size: 0.8rem; color: var(--text-secondary);">كود التحقق الرقمي: MOE-2026-REG-320</span>
             </div>
           </div>
@@ -162,41 +162,6 @@
           </div>
         </div>
 
-        <!-- Grade Table: Added Subjects -->
-        <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 14px;">📚 تفاصيل درجات المواد المضافة للمجموع (320 درجة):</h3>
-        <div class="grade-table-wrapper">
-          <table class="grade-table">
-            <thead>
-              <tr>
-                <th>المادة</th>
-                <th>الدرجة المحصلة</th>
-                <th>النسبة المئوية</th>
-                <th>الأداء والتقدير</th>
-              </tr>
-            </thead>
-            <tbody id="resGradeTableBody">
-              <!-- Dynamically Populated -->
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Grade Table: Non-Added Subjects -->
-        <h3 style="font-size: 1.1rem; font-weight: 800; margin: 25px 0 12px 0; color:var(--text-secondary);">📝 المواد عدم المضافة للمجموع (مواد النجاح والرسوب):</h3>
-        <div class="grade-table-wrapper">
-          <table class="grade-table">
-            <thead>
-              <tr>
-                <th>المادة</th>
-                <th>الدرجة</th>
-                <th>الحالة</th>
-              </tr>
-            </thead>
-            <tbody id="resNonAddedTableBody">
-              <!-- Dynamically Populated -->
-            </tbody>
-          </table>
-        </div>
-
         <!-- Tanseeq College Admission Calculator Section -->
         <div class="tanseeq-section">
           <h3 style="font-size: 1.3rem; font-weight: 800;">🏛️ توقعات التنسيق وحاسبة الكليات المتاحة للطالب:</h3>
@@ -212,7 +177,7 @@
         <div class="action-buttons-row">
           <button onclick="printResultCard()" class="btn-action">
             <span>🖨️</span>
-            <span>طباعة شهادة الدرجات المعتمدة PDF</span>
+            <span>طباعة النتيجة الرسمية PDF</span>
           </button>
           <button onclick="shareOnWhatsApp()" class="btn-action btn-whatsapp">
             <span>💬</span>
@@ -234,7 +199,7 @@
       </p>
       
       <p>
-        يمكن لجميع الطلاب وأولياء الأمور الاستعلام الفوري برقم الجلوس واستخراج شهادة بيان درجات تفصيلية معتمدة لكل مادة، بالإضافة إلى معرفة التنسيق المتوقع للقبول بالجامعات والمعاهد المصرية.
+        يمكن لجميع الطلاب وأولياء الأمور الاستعلام الفوري برقم الجلوس واستخراج بيان المجموع الرسمي المعتمد فوراً، بالإضافة إلى معرفة التنسيق المتوقع للقبول بالجامعات والمعاهد المصرية.
       </p>
 
       <!-- FAQ Accordion -->
@@ -244,7 +209,7 @@
         <div class="faq-item">
           <button class="faq-question">
             <span>ما هو المجموع الكلي للثانوية العامة بالنظام الجديد 2026؟</span>
-            <span>➕</span>
+            <span class="faq-icon">＋</span>
           </button>
           <div class="faq-answer">
             المجموع الكلي بالنظام الجديد هو 320 درجة، مقسمة على 5 مواد أساسية لكل شعبة (اللغة العربية 80 درجة، اللغة الأجنبية الأولى 60 درجة، و3 مواد تخصية بقيمة 60 درجة لكل مادة).
@@ -254,17 +219,17 @@
         <div class="faq-item">
           <button class="faq-question">
             <span>كيف يتم الاستعلام برقم الجلوس والاسم؟</span>
-            <span>➕</span>
+            <span class="faq-icon">＋</span>
           </button>
           <div class="faq-answer">
-            قم باختيار طريقة البحث (برقم الجلوس أو بالاسم الرباعي) واكتب بياناتك في خانة البحث ثم اضغط على "عرض النتيجة الآن" ليتم إظهار بيان الدرجات المعتمد وحاسبة الكليات المتاحة مباشرة.
+            قم باختيار طريقة البحث (برقم الجلوس أو بالاسم الرباعي) واكتب بياناتك في خانة البحث ثم اضغط على "عرض النتيجة الآن" ليتم إظهار نتيجة الطالب المعتمدة وحاسبة الكليات المتاحة مباشرة.
           </div>
         </div>
 
         <div class="faq-item">
           <button class="faq-question">
             <span>هل النتيجة المعروضة مطابقة للنظام الجديد 320 درجة؟</span>
-            <span>➕</span>
+            <span class="faq-icon">＋</span>
           </button>
           <div class="faq-answer">
             نعم، جميع الدرجات والنسب المئوية ومؤشرات التنسيق محسبة بالكامل بناءً على لائحة إعادة هيكلة الثانوية العامة والمجموع الكلي 320 درجة.
