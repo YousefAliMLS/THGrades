@@ -1,5 +1,5 @@
 // Application Core Logic for Thanawiya Amma Results 2026
-// Direct & Instant 919,396 Student Database Lookup (Zero-Latency)
+// Direct & Instant 919,396 Student Database Lookup (Zero-Latency) - Roll Number Only
 
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
@@ -48,6 +48,13 @@ const TANSEEQ_DATA = {
   ]
 };
 
+// Convert Eastern Arabic Numerals (٠١٢٣٤٥٦٧٨٩) to English Digits (0123456789)
+function convertArabicDigitsToEnglish(str) {
+  if (!str) return '';
+  const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  return str.replace(/[٠-٩]/g, (w) => arabicDigits.indexOf(w).toString());
+}
+
 // Theme Management
 function initTheme() {
   const savedTheme = localStorage.getItem('site_theme') || 'dark';
@@ -73,34 +80,20 @@ function updateThemeIcon(theme) {
   }
 }
 
-// Search Logic (Direct Submit - Instant & Fast)
-let searchType = 'roll'; // 'roll' or 'name'
-
+// Search Logic (Roll Number Only - Strict 7-Digit Verification)
 function initSearchEvents() {
-  const tabRoll = document.getElementById('tabRoll');
-  const tabName = document.getElementById('tabName');
   const searchInput = document.getElementById('searchInput');
   const searchBtn = document.getElementById('searchBtn');
 
-  if (tabRoll && tabName) {
-    tabRoll.addEventListener('click', () => {
-      searchType = 'roll';
-      tabRoll.classList.add('active');
-      tabName.classList.remove('active');
-      searchInput.placeholder = 'أدخل رقم الجلوس المكون من 7 أرقام (مثال: 2001970)';
-      searchInput.value = '';
-    });
-
-    tabName.addEventListener('click', () => {
-      searchType = 'name';
-      tabName.classList.add('active');
-      tabRoll.classList.remove('active');
-      searchInput.placeholder = 'أدخل اسم الطالب رباعي (مثال: احمد محمود السيد)';
-      searchInput.value = '';
-    });
-  }
-
   if (searchInput) {
+    // Auto convert Arabic numerals to English on input & filter non-digits
+    searchInput.addEventListener('input', () => {
+      let converted = convertArabicDigitsToEnglish(searchInput.value);
+      converted = converted.replace(/\D/g, ''); // keep only numbers
+      searchInput.value = converted;
+      hideErrorAlert();
+    });
+
     searchInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         performSearch(searchInput.value.trim());
@@ -115,13 +108,19 @@ function initSearchEvents() {
   }
 }
 
-function normalizeArabicText(text) {
-  if (!text) return '';
-  return text
-    .replace(/[أإآ]/g, 'ا')
-    .replace(/ة/g, 'ه')
-    .replace(/ى/g, 'ي')
-    .toLowerCase();
+function showErrorAlert(message) {
+  const alertBox = document.getElementById('searchErrorAlert');
+  if (alertBox) {
+    alertBox.textContent = message;
+    alertBox.style.display = 'block';
+  }
+}
+
+function hideErrorAlert() {
+  const alertBox = document.getElementById('searchErrorAlert');
+  if (alertBox) {
+    alertBox.style.display = 'none';
+  }
 }
 
 window.selectStudent = function(roll) {
@@ -144,34 +143,29 @@ const EGYPTIAN_SCHOOLS = [
   'مدرسة العباسية الثانوية بنات'
 ];
 
-// Direct Key Lookup - Instant O(1) Time
+// Direct Key Lookup in Official Excel Data - Instant O(1) Time
 function performSearch(query) {
-  if (!query) {
-    alert('برجاء كتابة رقم الجلوس أو الاسم للبحث');
+  hideErrorAlert();
+  
+  // Convert Arabic numbers if passed
+  const cleanRoll = convertArabicDigitsToEnglish(query).replace(/\D/g, '');
+
+  // Strict Validation: Must be non-empty and exactly 7 digits
+  if (!cleanRoll) {
+    showErrorAlert('⚠️ برجاء كتابة رقم الجلوس المكون من 7 أرقام للاستعلام.');
     return;
   }
 
-  const normQuery = normalizeArabicText(query);
+  if (cleanRoll.length !== 7) {
+    showErrorAlert(`⚠️ رقم الجلوس يجب أن يكون كاملاً ومكوناً من 7 أرقام باللغة الإنجليزية (أدخلت ${cleanRoll.length} أرقام فقط). مثال: 2001970.`);
+    return;
+  }
 
-  let rollKey = null;
+  let rollKey = cleanRoll;
   let rawData = null;
 
-  if (typeof OFFICIAL_STUDENT_DB !== 'undefined') {
-    // 1. Direct O(1) Instant Roll Number Map Lookup
-    if (OFFICIAL_STUDENT_DB[query]) {
-      rollKey = query;
-      rawData = OFFICIAL_STUDENT_DB[query];
-    } else if (searchType === 'name') {
-      // 2. Fast Name Search Lookup on Submit
-      for (const r in OFFICIAL_STUDENT_DB) {
-        const rec = OFFICIAL_STUDENT_DB[r];
-        if (normalizeArabicText(rec[0]).includes(normQuery)) {
-          rollKey = r;
-          rawData = rec;
-          break;
-        }
-      }
-    }
+  if (typeof OFFICIAL_STUDENT_DB !== 'undefined' && OFFICIAL_STUDENT_DB[cleanRoll]) {
+    rawData = OFFICIAL_STUDENT_DB[cleanRoll];
   }
 
   let student = null;
@@ -189,27 +183,8 @@ function performSearch(query) {
     
     student = buildStudentResultObject(rollKey, fullName, total, rawCase, track, school);
   } else {
-    // Generative Fallback for custom search queries
-    const rollNum = query.replace(/\D/g, '') || '2001970';
-    const numVal = parseInt(rollNum) || 2001970;
-
-    const pseudoTotal = 180 + ((numVal * 37) % 135);
-    const track = (numVal % 3 === 0) ? 'علمي علوم' : ((numVal % 3 === 1) ? 'علمي رياضة' : 'أدبي');
-    
-    const sampleFirstNames = ['أحمد', 'محمد', 'محمود', 'مصطفى', 'عبد الرحمن', 'علي', 'عمر', 'إبراهيم', 'يوسف', 'خالد'];
-    const sampleFatherNames = ['محمد', 'أحمد', 'السيد', 'حسين', 'إبراهيم', 'عبد العزيز', 'فاروق', 'سعد'];
-    const sampleGrandNames = ['عبد الجواد', 'حسن', 'رمضان', 'شعبان', 'فتحي', 'مرسي', 'توفيق', 'عباس'];
-
-    const fn = sampleFirstNames[numVal % sampleFirstNames.length];
-    const mn = sampleFatherNames[(numVal * 3) % sampleFatherNames.length];
-    const gn = sampleGrandNames[(numVal * 7) % sampleGrandNames.length];
-    const ln = sampleFatherNames[(numVal * 11) % sampleFatherNames.length];
-
-    const generatedFullName = (searchType === 'name' && query.length > 3) ? query : `${fn} ${mn} ${gn} ${ln}`;
-    const rawCase = pseudoTotal >= 160 ? 'ناجح دور أول' : 'له دور ثان';
-    const school = EGYPTIAN_SCHOOLS[numVal % EGYPTIAN_SCHOOLS.length];
-
-    student = buildStudentResultObject(rollNum, generatedFullName, pseudoTotal, rawCase, track, school);
+    showErrorAlert(`⚠️ رقم الجلوس (${cleanRoll}) غير مسجل في الكنترول الرسمي. يرجى التأكد من كتابة رقم الجلوس الصحيح (مثال: 2001970).`);
+    return;
   }
 
   renderResultCard(student);
