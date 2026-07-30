@@ -109,6 +109,7 @@ function initSearchEvents() {
 }
 
 function showErrorAlert(message) {
+  hideResultCard();
   const alertBox = document.getElementById('searchErrorAlert');
   if (alertBox) {
     alertBox.textContent = message;
@@ -120,6 +121,13 @@ function hideErrorAlert() {
   const alertBox = document.getElementById('searchErrorAlert');
   if (alertBox) {
     alertBox.style.display = 'none';
+  }
+}
+
+function hideResultCard() {
+  const card = document.getElementById('resultCard');
+  if (card) {
+    card.style.display = 'none';
   }
 }
 
@@ -150,43 +158,42 @@ function performSearch(query) {
   // Convert Arabic numbers if passed
   const cleanRoll = convertArabicDigitsToEnglish(query).replace(/\D/g, '');
 
-  // Strict Validation: Must be non-empty and exactly 7 digits
+  // Strict Validation 1: Non-empty
   if (!cleanRoll) {
     showErrorAlert('⚠️ برجاء كتابة رقم الجلوس المكون من 7 أرقام للاستعلام.');
     return;
   }
 
+  // Strict Validation 2: Exactly 7 digits
   if (cleanRoll.length !== 7) {
     showErrorAlert(`⚠️ رقم الجلوس يجب أن يكون كاملاً ومكوناً من 7 أرقام باللغة الإنجليزية (أدخلت ${cleanRoll.length} أرقام فقط). مثال: 2001970.`);
     return;
   }
 
-  let rollKey = cleanRoll;
   let rawData = null;
 
+  // Strict Validation 3: Must exist in OFFICIAL_STUDENT_DB Excel parsed data
   if (typeof OFFICIAL_STUDENT_DB !== 'undefined' && OFFICIAL_STUDENT_DB[cleanRoll]) {
     rawData = OFFICIAL_STUDENT_DB[cleanRoll];
   }
 
-  let student = null;
-
-  if (rawData) {
-    const fullName = rawData[0] && rawData[0].trim() !== '' ? rawData[0] : `طالب ثانوية عامة (رقم ${rollKey})`;
-    const total = parseFloat(rawData[1]);
-    const caseCode = rawData[2];
-    const rawCase = caseCode === 1 ? 'ناجح دور أول' : (caseCode === 2 ? 'له دور ثان' : 'راسب');
-    
-    // Determine Track dynamically from roll number
-    const rollNum = parseInt(rollKey) || 2001970;
-    const track = (rollNum % 3 === 0) ? 'علمي علوم' : ((rollNum % 3 === 1) ? 'علمي رياضة' : 'أدبي');
-    const school = EGYPTIAN_SCHOOLS[rollNum % EGYPTIAN_SCHOOLS.length];
-    
-    student = buildStudentResultObject(rollKey, fullName, total, rawCase, track, school);
-  } else {
-    showErrorAlert(`⚠️ رقم الجلوس (${cleanRoll}) غير مسجل في الكنترول الرسمي. يرجى التأكد من كتابة رقم الجلوس الصحيح (مثال: 2001970).`);
+  if (!rawData) {
+    showErrorAlert(`⚠️ رقم الجلوس (${cleanRoll}) غير مسجل في قاعدة بيانات الكنترول الرسمية. يرجى التأكد من الرقم الصحيح (مثال: 2001970).`);
     return;
   }
 
+  const rollKey = cleanRoll;
+  const fullName = rawData[0] && rawData[0].trim() !== '' ? rawData[0] : `طالب ثانوية عامة (رقم ${rollKey})`;
+  const total = parseFloat(rawData[1]);
+  const caseCode = rawData[2];
+  const rawCase = caseCode === 1 ? 'ناجح دور أول' : (caseCode === 2 ? 'له دور ثان' : 'راسب');
+  
+  // Determine Track dynamically from roll number
+  const rollNum = parseInt(rollKey) || 2001970;
+  const track = (rollNum % 3 === 0) ? 'علمي علوم' : ((rollNum % 3 === 1) ? 'علمي رياضة' : 'أدبي');
+  const school = EGYPTIAN_SCHOOLS[rollNum % EGYPTIAN_SCHOOLS.length];
+  
+  const student = buildStudentResultObject(rollKey, fullName, total, rawCase, track, school);
   renderResultCard(student);
 }
 
