@@ -131,7 +131,7 @@ function hideResultCard() {
   }
 }
 
-window.selectStudent = function(roll) {
+window.selectStudent = function (roll) {
   const searchInput = document.getElementById('searchInput');
   if (searchInput) searchInput.value = roll;
   performSearch(roll);
@@ -154,7 +154,7 @@ const EGYPTIAN_SCHOOLS = [
 // Direct Key Lookup in Official Excel Data - Instant O(1) Time
 function performSearch(query) {
   hideErrorAlert();
-  
+
   // Convert Arabic numbers if passed
   const cleanRoll = convertArabicDigitsToEnglish(query).replace(/\D/g, '');
 
@@ -187,12 +187,12 @@ function performSearch(query) {
   const total = parseFloat(rawData[1]);
   const caseCode = rawData[2];
   const rawCase = caseCode === 1 ? 'ناجح دور أول' : (caseCode === 2 ? 'له دور ثان' : 'راسب');
-  
+
   // Determine Track dynamically from roll number
   const rollNum = parseInt(rollKey) || 2001970;
   const track = (rollNum % 3 === 0) ? 'علمي علوم' : ((rollNum % 3 === 1) ? 'علمي رياضة' : 'أدبي');
   const school = EGYPTIAN_SCHOOLS[rollNum % EGYPTIAN_SCHOOLS.length];
-  
+
   const student = buildStudentResultObject(rollKey, fullName, total, rawCase, track, school);
   renderResultCard(student);
 }
@@ -229,7 +229,7 @@ function renderResultCard(student) {
   statusBadge.textContent = student.status;
   statusBadge.className = 'tag ' + (
     student.status.includes('ناجح') ? 'tag-status-pass' :
-    student.status.includes('دور') ? 'tag-status-resit' : 'tag-status-fail'
+      student.status.includes('دور') ? 'tag-status-resit' : 'tag-status-fail'
   );
 
   document.getElementById('resPercentage').textContent = `${student.percentage}%`;
@@ -278,12 +278,12 @@ function renderTanseeqSection(student) {
 }
 
 // Print Handler
-window.printResultCard = function() {
+window.printResultCard = function () {
   window.print();
 };
 
 // WhatsApp Share Handler
-window.shareOnWhatsApp = function() {
+window.shareOnWhatsApp = function () {
   const name = document.getElementById('resStudentName').textContent;
   const roll = document.getElementById('resRollNumber').textContent;
   const percent = document.getElementById('resPercentage').textContent;
@@ -315,3 +315,29 @@ function initFAQ() {
     });
   });
 }
+
+// Legal Policy Modals Open & Close Handlers for Google AdSense
+window.openPolicyModal = function(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+window.closePolicyModal = function(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+};
+
+// Close modal when clicking on backdrop
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('policy-modal')) {
+    e.target.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+});
+
